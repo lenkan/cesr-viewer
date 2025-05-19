@@ -1,0 +1,9 @@
+.message_list {
+  display: flex;
+  flex-direction: column;
+  gap: 10rem;
+}
+
+.message_body {
+  border-bottom: 1px solid #ccc;
+}

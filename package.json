@@ -10,7 +10,9 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/chrome": "^0.0.323",
     "@types/node": "^22.15.18",
+    "cesr": "^0.0.8-dev.933d35d",
     "esbuild": "^0.25.4",
     "prettier": "^3.5.3",
     "typescript": "^5.8.3"
