@@ -1,0 +1,19 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer circle with gradient -->
+  <defs>
+    <radialGradient id="glassGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#a7f3d0"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </radialGradient>
+    <linearGradient id="handleGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f472b6"/>
+    </linearGradient>
+  </defs>
+  <!-- Magnifying glass lens -->
+  <circle cx="60" cy="60" r="40" stroke="#2563eb" stroke-width="8" fill="url(#glassGradient)"/>
+  <!-- Magnifying glass highlight -->
+  <ellipse cx="52" cy="52" rx="12" ry="6" fill="#fff" fill-opacity="0.5"/>
+  <!-- Magnifying glass handle -->
+  <rect x="88" y="88" width="36" height="12" rx="6" transform="rotate(45 88 88)" fill="url(#handleGradient)" stroke="#be185d" stroke-width="3"/>
+</svg>

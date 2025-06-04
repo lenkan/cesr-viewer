@@ -19,9 +19,7 @@ async function render(reader: ReadableStream<Uint8Array>) {
   }
 }
 
-console.log("Content script running!", chrome.runtime);
 chrome.runtime.onMessage.addListener(async (msg) => {
-  console.log("Received message:", msg);
   if (msg.runScript) {
     const decoder = new TextEncoderStream();
 

@@ -8,14 +8,11 @@ function isCesrResponse(contentType: string) {
   return contentType.startsWith("application/json+cesr") || contentType.startsWith("application/cesr");
 }
 
-console.log("Background script running!", chrome.runtime);
 chrome.webRequest.onHeadersReceived.addListener(
   (details) => {
     const contentType = details.responseHeaders?.find((h) => h.name.toLowerCase() === "content-type");
 
     if (contentType && contentType.value && isCesrResponse(contentType.value)) {
-      // console.log("CESR response detected", details);
-      // chrome.tabs.sendMessage(details.tabId, { runScript: true });
       chrome.scripting.executeScript(
         {
           target: { tabId: details.tabId },
