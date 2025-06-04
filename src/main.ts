@@ -19,14 +19,14 @@ async function render(reader: ReadableStream<Uint8Array>) {
   }
 }
 
-chrome.runtime.onMessage.addListener(async (msg) => {
-  if (msg.runScript) {
-    const decoder = new TextEncoderStream();
+async function run() {
+  const decoder = new TextEncoderStream();
 
-    const writer = decoder.writable.getWriter();
-    render(decoder.readable);
+  const writer = decoder.writable.getWriter();
+  render(decoder.readable);
 
-    await writer.write(document.body.innerText);
-    await writer.close();
-  }
-});
+  await writer.write(document.body.innerText);
+  await writer.close();
+}
+
+run();

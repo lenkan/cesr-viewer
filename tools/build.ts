@@ -36,7 +36,7 @@ function renderManifest() {
       service_worker: "background.js",
       type: "module",
     },
-    permissions: ["scripting", "declarativeNetRequest", "activeTab", "webRequest"],
+    permissions: ["action", "scripting", "declarativeNetRequest", "activeTab", "webRequest"],
     host_permissions,
   };
 }

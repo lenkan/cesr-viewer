@@ -13,15 +13,10 @@ chrome.webRequest.onHeadersReceived.addListener(
     const contentType = details.responseHeaders?.find((h) => h.name.toLowerCase() === "content-type");
 
     if (contentType && contentType.value && isCesrResponse(contentType.value)) {
-      chrome.scripting.executeScript(
-        {
-          target: { tabId: details.tabId },
-          files: ["main.js"],
-        },
-        () => {
-          chrome.tabs.sendMessage(details.tabId, { runScript: true });
-        }
-      );
+      chrome.scripting.executeScript({
+        target: { tabId: details.tabId },
+        files: ["main.js"],
+      });
     }
   },
   { urls: ["<all_urls>"], types: ["main_frame"] },
