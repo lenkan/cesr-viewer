@@ -1,15 +1,12 @@
 {
-  "name": "cesr-extension",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "cesr-viewer",
   "type": "module",
   "scripts": {
     "dev": "node --watch --experimental-strip-types --no-warnings tools/build.ts -- --watch",
     "build": "node --experimental-strip-types --no-warnings tools/build.ts"
   },
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "author": "Daniel Lenksjö",
+  "license": "MIT",
   "devDependencies": {
     "@types/chrome": "^0.0.323",
     "@types/node": "^22.15.18",
