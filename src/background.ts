@@ -1,5 +1,32 @@
-console.log("Background script running!");
+if (process.env.NODE_ENV === "development") {
+  new EventSource("http://localhost:8000/esbuild").addEventListener("change", () => {
+    chrome.runtime.reload();
+  });
+}
 
-new EventSource("http://localhost:8000/esbuild").addEventListener("change", () => {
-  chrome.runtime.reload();
-});
+function isCesrResponse(contentType: string) {
+  return contentType.startsWith("application/json+cesr") || contentType.startsWith("application/cesr");
+}
+
+console.log("Background script running!", chrome.runtime);
+chrome.webRequest.onHeadersReceived.addListener(
+  (details) => {
+    const contentType = details.responseHeaders?.find((h) => h.name.toLowerCase() === "content-type");
+
+    if (contentType && contentType.value && isCesrResponse(contentType.value)) {
+      // console.log("CESR response detected", details);
+      // chrome.tabs.sendMessage(details.tabId, { runScript: true });
+      chrome.scripting.executeScript(
+        {
+          target: { tabId: details.tabId },
+          files: ["main.js"],
+        },
+        () => {
+          chrome.tabs.sendMessage(details.tabId, { runScript: true });
+        }
+      );
+    }
+  },
+  { urls: ["<all_urls>"], types: ["main_frame"] },
+  ["responseHeaders"]
+);

@@ -1,0 +1,8 @@
+{
+  "include": ["src/**/*", "tools/**/*"],
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es2020",
+    "moduleResolution": "bundler"
+  }
+}
