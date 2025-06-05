@@ -13,10 +13,12 @@ async function render(reader: ReadableStream<Uint8Array>) {
   }
 
   const original = document.body.getElementsByTagName("pre");
-
-  if (original[0]) {
-    document.body.replaceChild(list, original[0]);
+  for (const element of original) {
+    element.style.display = "none";
+    element.classList.add("original_text");
   }
+
+  document.body.appendChild(list);
 }
 
 async function run() {
@@ -29,4 +31,8 @@ async function run() {
   await writer.close();
 }
 
-run();
+if (document.readyState === "complete") {
+  run();
+} else {
+  window.addEventListener("load", run);
+}
