@@ -1,6 +1,6 @@
 import esbulid from "esbuild";
 import { cp, mkdir, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 
 const outdir = process.env.OUTDIR ?? "dist";
 await mkdir(outdir, { recursive: true });
@@ -15,7 +15,7 @@ function renderManifest() {
 
   return {
     name: "CESR Viewer",
-    version: "0.0.1",
+    version: "0.0.2",
     description: "CESR Viewer - View CESR streams in your browser",
     icons: {
       "32": "icon-32.png",
@@ -23,10 +23,18 @@ function renderManifest() {
       "128": "icon-128.png",
     },
     manifest_version: 3,
+    action: {
+      default_icon: {
+        "32": "icon-32.png",
+        "48": "icon-48.png",
+        "128": "icon-128.png",
+      },
+      default_title: "CESR Viewer",
+    },
     declarative_net_request: {
       rule_resources: [
         {
-          id: "ruleset_1",
+          id: "rewrite_cesr_content_type",
           enabled: true,
           path: "rules.json",
         },
@@ -36,7 +44,7 @@ function renderManifest() {
       service_worker: "background.js",
       type: "module",
     },
-    permissions: ["scripting", "declarativeNetRequest", "activeTab", "webRequest"],
+    permissions: ["declarativeNetRequest", "scripting", "activeTab", "webRequest"],
     host_permissions,
   };
 }
@@ -69,6 +77,13 @@ function renderRules() {
   ];
 }
 
+async function write(name: string, content: string | Uint8Array) {
+  const path = join(outdir, name);
+  await writeFile(path, content);
+
+  console.log(`Wrote file: ${name} (${Buffer.from(content).length} bytes)`);
+}
+
 const ctx = await esbulid.context({
   entryPoints: ["src/main.ts", "src/background.ts"],
   bundle: true,
@@ -84,28 +99,16 @@ const ctx = await esbulid.context({
       name: "manifest",
       setup(build) {
         build.onEnd(async (result) => {
-          console.log("Build completed", result);
           const outfiles = result.outputFiles ?? [];
+          for (const file of outfiles) {
+          }
+
           await Promise.all([
             cp("public", outdir, { recursive: true }),
-            writeFile(join(outdir, "rules.json"), JSON.stringify(renderRules(), null, 2)),
-            writeFile(join(outdir, "manifest.json"), JSON.stringify(renderManifest(), null, 2)),
-            ...(outfiles.map(async (file) => {
-              await writeFile(file.path, file.contents);
-            }) ?? []),
+            write("rules.json", JSON.stringify(renderRules(), null, 2)),
+            write("manifest.json", JSON.stringify(renderManifest(), null, 2)),
+            ...outfiles.map((file) => write(basename(file.path), file.text)),
           ]);
-
-          for (const file of result.outputFiles ?? []) {
-            if (file.path.endsWith("main.js")) {
-              const result = await esbulid.transform(file.contents, {
-                format: "iife",
-              });
-
-              await writeFile(file.path, result.code);
-            } else {
-              await writeFile(file.path, file.contents);
-            }
-          }
         });
       },
     },
