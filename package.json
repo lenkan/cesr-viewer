@@ -1,6 +1,7 @@
 {
   "name": "cesr-viewer",
   "type": "module",
+  "version": "0.0.2",
   "scripts": {
     "dev": "node --watch --experimental-strip-types --no-warnings tools/build.ts -- --watch",
     "build": "node --experimental-strip-types --no-warnings tools/build.ts"

@@ -1,8 +1,10 @@
 import esbulid from "esbuild";
-import { cp, mkdir, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
 
 const outdir = process.env.OUTDIR ?? "dist";
+const version = JSON.parse(await readFile("package.json", "utf8")).version;
+
 await mkdir(outdir, { recursive: true });
 const watch = process.argv.includes("--watch");
 
@@ -15,7 +17,7 @@ function renderManifest() {
 
   return {
     name: "CESR Viewer",
-    version: "0.0.2",
+    version: version,
     description: "CESR Viewer - View CESR streams in your browser",
     icons: {
       "32": "icon-32.png",
