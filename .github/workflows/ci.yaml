@@ -29,5 +29,5 @@ jobs:
       - name: Upload ZIP as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: cesr-viewer
+          name: cesr-viewer-${{ github.run_id }}-${{ github.sha }}
           path: dist
