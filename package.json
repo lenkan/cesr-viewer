@@ -13,7 +13,7 @@
     "@types/node": "^22.18.12",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
-    "cesr": "^0.0.16",
+    "cesr": "^0.0.19",
     "esbuild": "^0.25.4",
     "prettier": "^3.5.3",
     "react": "^19.2.0",

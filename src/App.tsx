@@ -1,5 +1,5 @@
+import { parse } from "cesr";
 import { useEffect, useState } from "react";
-import { parseMessages } from "./parser";
 
 export interface Message {
   payload: Record<string, unknown>;
@@ -212,24 +212,29 @@ export function App(props: AppProps) {
   const [expandedMessages, setExpandedMessages] = useState<Set<number>>(new Set());
   const [showRawText, setShowRawText] = useState(false);
 
-  async function parse(text: string) {
-    for await (const message of parseMessages(text)) {
+  async function startParse(text: string) {
+    for await (const message of parse(text)) {
       setMessages((prevMessages) => [...prevMessages, message]);
     }
   }
 
   useEffect(() => {
-    parse(props.text);
+    startParse(props.text);
   }, [props.text]);
 
   const downloadText = () => {
     if (!props.text) return;
-    
+
     // Get filename from URL pathname, replace extension with .cesr
     const pathname = window.location.pathname;
-    const filename = pathname === "/" ? "cesr-data.cesr" : 
-      pathname.split("/").pop()?.replace(/\.[^/.]+$/, "") + ".cesr" || "cesr-data.cesr";
-    
+    const filename =
+      pathname === "/"
+        ? "cesr-data.cesr"
+        : pathname
+            .split("/")
+            .pop()
+            ?.replace(/\.[^/.]+$/, "") + ".cesr" || "cesr-data.cesr";
+
     const blob = new Blob([props.text], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -342,7 +347,7 @@ export function App(props: AppProps) {
         >
           📥 Download CESR
         </button>
-        
+
         <button
           onClick={() => setShowRawText(!showRawText)}
           style={{
@@ -404,22 +409,20 @@ export function App(props: AppProps) {
                 wordBreak: "break-all",
               }}
             >
-              <code style={{ color: "#1e293b" }}>
-                {props.text || "No CESR data available"}
-              </code>
+              <code style={{ color: "#1e293b" }}>{props.text || "No CESR data available"}</code>
             </pre>
           </div>
         ) : (
           <ul style={{ listStyleType: "none", padding: 0, margin: 0 }}>
-          {messages.map((message, index) => (
-            <MessageCard
-              key={index}
-              message={message}
-              index={index}
-              isExpanded={expandedMessages.has(index)}
-              onToggleAttachments={() => toggleAttachments(index)}
-            />
-          ))}
+            {messages.map((message, index) => (
+              <MessageCard
+                key={index}
+                message={message}
+                index={index}
+                isExpanded={expandedMessages.has(index)}
+                onToggleAttachments={() => toggleAttachments(index)}
+              />
+            ))}
           </ul>
         )}
       </div>
