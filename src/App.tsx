@@ -210,6 +210,7 @@ function MessageCard({ message, index, isExpanded, onToggleAttachments }: Messag
 export function App(props: AppProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [expandedMessages, setExpandedMessages] = useState<Set<number>>(new Set());
+  const [showRawText, setShowRawText] = useState(false);
 
   async function parse(text: string) {
     for await (const message of parseMessages(text)) {
@@ -220,6 +221,25 @@ export function App(props: AppProps) {
   useEffect(() => {
     parse(props.text);
   }, [props.text]);
+
+  const downloadText = () => {
+    if (!props.text) return;
+    
+    // Get filename from URL pathname, replace extension with .cesr
+    const pathname = window.location.pathname;
+    const filename = pathname === "/" ? "cesr-data.cesr" : 
+      pathname.split("/").pop()?.replace(/\.[^/.]+$/, "") + ".cesr" || "cesr-data.cesr";
+    
+    const blob = new Blob([props.text], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   const toggleAttachments = (index: number) => {
     const newExpanded = new Set(expandedMessages);
@@ -290,8 +310,107 @@ export function App(props: AppProps) {
         </div>
       </div>
 
+      <div
+        style={{
+          textAlign: "center",
+          marginBottom: "24px",
+          display: "flex",
+          gap: "12px",
+          justifyContent: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        <button
+          onClick={downloadText}
+          style={{
+            backgroundColor: "#3b82f6",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            padding: "10px 16px",
+            fontSize: "14px",
+            fontWeight: "600",
+            cursor: "pointer",
+            transition: "background-color 0.2s ease",
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = "#2563eb";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = "#3b82f6";
+          }}
+        >
+          📥 Download CESR
+        </button>
+        
+        <button
+          onClick={() => setShowRawText(!showRawText)}
+          style={{
+            backgroundColor: showRawText ? "#ef4444" : "#10b981",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            padding: "10px 16px",
+            fontSize: "14px",
+            fontWeight: "600",
+            cursor: "pointer",
+            transition: "background-color 0.2s ease",
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = showRawText ? "#dc2626" : "#059669";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = showRawText ? "#ef4444" : "#10b981";
+          }}
+        >
+          {showRawText ? "📄 Show Pretty View" : "📝 Show Raw Text"}
+        </button>
+      </div>
+
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        <ul style={{ listStyleType: "none", padding: 0, margin: 0 }}>
+        {showRawText ? (
+          <div
+            style={{
+              backgroundColor: "#ffffff",
+              border: "1px solid #e2e8f0",
+              borderRadius: "12px",
+              padding: "20px",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            }}
+          >
+            <h3
+              style={{
+                margin: "0 0 12px 0",
+                fontSize: "16px",
+                fontWeight: "600",
+                color: "#374151",
+              }}
+            >
+              Raw CESR Text
+            </h3>
+            <pre
+              style={{
+                margin: 0,
+                fontSize: "12px",
+                fontFamily: '"Fira Code", "Consolas", "Monaco", monospace',
+                lineHeight: "1.4",
+                backgroundColor: "#f8fafc",
+                border: "1px solid #e2e8f0",
+                borderRadius: "6px",
+                padding: "16px",
+                overflow: "auto",
+                maxHeight: "500px",
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-all",
+              }}
+            >
+              <code style={{ color: "#1e293b" }}>
+                {props.text || "No CESR data available"}
+              </code>
+            </pre>
+          </div>
+        ) : (
+          <ul style={{ listStyleType: "none", padding: 0, margin: 0 }}>
           {messages.map((message, index) => (
             <MessageCard
               key={index}
@@ -301,7 +420,8 @@ export function App(props: AppProps) {
               onToggleAttachments={() => toggleAttachments(index)}
             />
           ))}
-        </ul>
+          </ul>
+        )}
       </div>
     </div>
   );
