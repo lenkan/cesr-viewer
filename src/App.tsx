@@ -245,12 +245,50 @@ export function App(props: AppProps) {
           color: "#1e293b",
           fontSize: "24px",
           fontWeight: "600",
-          marginBottom: "24px",
+          marginBottom: "12px",
           textAlign: "center",
         }}
       >
         CESR Messages
       </h1>
+
+      <div
+        style={{
+          textAlign: "center",
+          marginBottom: "24px",
+          fontSize: "14px",
+          color: "#64748b",
+        }}
+      >
+        <div style={{ marginBottom: "4px" }}>
+          Powered by{" "}
+          <a
+            href="https://github.com/lenkan/cesr-js"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: "#3b82f6",
+              textDecoration: "none",
+            }}
+          >
+            https://github.com/lenkan/cesr-js
+          </a>
+        </div>
+        <div>
+          Source code available at{" "}
+          <a
+            href="https://github.com/lenkan/cesr-viewer"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: "#3b82f6",
+              textDecoration: "none",
+            }}
+          >
+            https://github.com/lenkan/cesr-viewer
+          </a>
+        </div>
+      </div>
 
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         <ul style={{ listStyleType: "none", padding: 0, margin: 0 }}>
