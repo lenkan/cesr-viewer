@@ -20,16 +20,16 @@ function renderManifest() {
     version: version,
     description: "CESR Viewer - View CESR streams in your browser",
     icons: {
-      "32": "icon-32.png",
-      "48": "icon-48.png",
-      "128": "icon-128.png",
+      "32": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png",
     },
     manifest_version: 3,
     action: {
       default_icon: {
-        "32": "icon-32.png",
-        "48": "icon-48.png",
-        "128": "icon-128.png",
+        "32": "icon.png",
+        "48": "icon.png",
+        "128": "icon.png",
       },
       default_title: "CESR Viewer",
     },
@@ -87,7 +87,7 @@ async function write(name: string, content: string | Uint8Array) {
 }
 
 const ctx = await esbulid.context({
-  entryPoints: ["src/main.ts", "src/background.ts"],
+  entryPoints: ["src/main.tsx", "src/background.ts"],
   bundle: true,
   platform: "browser",
   format: "esm",

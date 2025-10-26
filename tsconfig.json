@@ -3,6 +3,10 @@
   "compilerOptions": {
     "module": "esnext",
     "target": "es2020",
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "types": ["./types.d.ts", "@types/chrome", "@types/node"]
   }
 }

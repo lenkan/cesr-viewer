@@ -3,17 +3,21 @@
   "type": "module",
   "version": "0.0.4",
   "scripts": {
-    "dev": "node --watch --experimental-strip-types --no-warnings tools/build.ts -- --watch",
-    "build": "node --experimental-strip-types --no-warnings tools/build.ts"
+    "dev": "node --watch tools/build.ts -- --watch",
+    "build": "node tools/build.ts"
   },
   "author": "Daniel Lenksjö",
   "license": "MIT",
   "devDependencies": {
     "@types/chrome": "^0.0.323",
-    "@types/node": "^22.15.18",
-    "cesr": "^0.0.11",
+    "@types/node": "^22.18.12",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "cesr": "^0.0.16",
     "esbuild": "^0.25.4",
     "prettier": "^3.5.3",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "typescript": "^5.8.3"
   }
 }

@@ -13,6 +13,8 @@ chrome.webRequest.onHeadersReceived.addListener(
     const contentType = details.responseHeaders?.find((h) => h.name.toLowerCase() === "content-type");
 
     if (contentType && contentType.value && isCesrResponse(contentType.value)) {
+      chrome.action.setBadgeText({ text: "CESR" });
+
       chrome.scripting.executeScript({
         target: { tabId: details.tabId },
         files: ["main.js"],
