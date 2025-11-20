@@ -1,10 +1,5 @@
-import { parse } from "cesr";
+import { Attachments, Message, parse } from "cesr";
 import { useEffect, useState } from "react";
-
-export interface Message {
-  payload: Record<string, unknown>;
-  attachments: string[];
-}
 
 export interface AppProps {
   text?: string;
@@ -48,24 +43,18 @@ function MessageHeader({ message, index }: MessageHeaderProps) {
       }}
     >
       <Badge color="#3b82f6">Message {index + 1}</Badge>
-      {message.payload.t && <Badge color="#8b5cf6">Type: {String(message.payload.t)}</Badge>}
-      {message.payload.d && <Badge color="#f59e0b">Digest: {String(message.payload.d)}</Badge>}
-      {message.payload.i && <Badge color="#ef4444">i: {String(message.payload.i)}</Badge>}
-      {message.attachments.length > 0 && (
-        <Badge color="#10b981">
-          {message.attachments.length} attachment frame{message.attachments.length !== 1 ? "s" : ""}
-        </Badge>
-      )}
+      {message.body.payload.t && <Badge color="#8b5cf6">Type: {String(message.body.payload.t)}</Badge>}
+      {message.body.payload.d && <Badge color="#f59e0b">Digest: {String(message.body.payload.d)}</Badge>}
+      {message.body.payload.i && <Badge color="#ef4444">i: {String(message.body.payload.i)}</Badge>}
     </div>
   );
 }
 
 interface PayloadSectionProps {
   payload: Record<string, unknown>;
-  hasAttachments: boolean;
 }
 
-function PayloadSection({ payload, hasAttachments }: PayloadSectionProps) {
+function PayloadSection({ payload }: PayloadSectionProps) {
   return (
     <div
       style={{
@@ -73,7 +62,7 @@ function PayloadSection({ payload, hasAttachments }: PayloadSectionProps) {
         border: "1px solid #e2e8f0",
         borderRadius: "8px",
         padding: "16px",
-        marginBottom: hasAttachments ? "16px" : "0",
+        marginBottom: "16px",
       }}
     >
       <h3
@@ -110,13 +99,115 @@ function PayloadSection({ payload, hasAttachments }: PayloadSectionProps) {
 }
 
 interface AttachmentListProps {
-  attachments: string[];
+  attachments: Attachments;
   isExpanded: boolean;
   onToggle: () => void;
 }
 
 function AttachmentList({ attachments, isExpanded, onToggle }: AttachmentListProps) {
-  if (attachments.length === 0) return null;
+  const renderAttachmentValue = (value: any, idx: number) => {
+    // If it's a simple string, render it directly
+    if (typeof value === "string") {
+      return (
+        <div
+          key={idx}
+          style={{
+            backgroundColor: "#fffbeb",
+            border: "1px solid #fcd34d",
+            borderRadius: "4px",
+            padding: "6px 8px",
+          }}
+        >
+          <code
+            style={{
+              fontSize: "11px",
+              fontFamily: '"Fira Code", "Consolas", "Monaco", monospace',
+              color: "#451a03",
+              wordBreak: "break-all",
+            }}
+          >
+            {value}
+          </code>
+        </div>
+      );
+    }
+
+    // If it's an object or complex type, render as JSON
+    return (
+      <div
+        key={idx}
+        style={{
+          backgroundColor: "#fffbeb",
+          border: "1px solid #fcd34d",
+          borderRadius: "4px",
+          padding: "6px 8px",
+        }}
+      >
+        <pre
+          style={{
+            margin: 0,
+            fontSize: "11px",
+            fontFamily: '"Fira Code", "Consolas", "Monaco", monospace',
+            color: "#451a03",
+            whiteSpace: "pre-wrap",
+            wordBreak: "break-all",
+          }}
+        >
+          {JSON.stringify(value, null, 2)}
+        </pre>
+      </div>
+    );
+  };
+
+  const renderAttachmentSection = (key: string, values: any[] | undefined) => {
+    if (!values || values.length === 0) return null;
+
+    return (
+      <div
+        key={key}
+        style={{
+          backgroundColor: "#fef3c7",
+          border: "1px solid #fbbf24",
+          borderRadius: "6px",
+          padding: "12px",
+        }}
+      >
+        <div
+          style={{
+            fontSize: "12px",
+            fontWeight: "600",
+            color: "#92400e",
+            marginBottom: "8px",
+          }}
+        >
+          {key}
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+          }}
+        >
+          {values.map((value, idx) => renderAttachmentValue(value, idx))}
+        </div>
+      </div>
+    );
+  };
+
+  const allAttachmentSections = [
+    renderAttachmentSection("ControllerIdxSigs", attachments.ControllerIdxSigs),
+    renderAttachmentSection("WitnessIdxSigs", attachments.WitnessIdxSigs),
+    renderAttachmentSection("NonTransReceiptCouples", attachments.NonTransReceiptCouples),
+    renderAttachmentSection("FirstSeenReplayCouples", attachments.FirstSeenReplayCouples),
+    renderAttachmentSection("TransIdxSigGroups", attachments.TransIdxSigGroups),
+    renderAttachmentSection("TransLastIdxSigGroups", attachments.TransLastIdxSigGroups),
+    renderAttachmentSection("SealSourceCouples", attachments.SealSourceCouples),
+    renderAttachmentSection("SealSourceTriples", attachments.SealSourceTriples),
+    renderAttachmentSection("PathedMaterialCouples", attachments.PathedMaterialCouples),
+  ].filter(Boolean);
+
+  if (allAttachmentSections.length === 0) return null;
 
   return (
     <div>
@@ -141,7 +232,7 @@ function AttachmentList({ attachments, isExpanded, onToggle }: AttachmentListPro
           e.currentTarget.style.backgroundColor = "#10b981";
         }}
       >
-        {isExpanded ? "Hide" : "Show"} Attachments ({attachments.length})
+        {isExpanded ? "Hide" : "Show"} Attachments
       </button>
 
       {isExpanded && (
@@ -149,31 +240,10 @@ function AttachmentList({ attachments, isExpanded, onToggle }: AttachmentListPro
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "4px",
+            gap: "12px",
           }}
         >
-          {attachments.map((attachment, attIndex) => (
-            <div
-              key={attIndex}
-              style={{
-                backgroundColor: "#fef3c7",
-                border: "1px solid #fbbf24",
-                borderRadius: "4px",
-                padding: "8px",
-              }}
-            >
-              <code
-                style={{
-                  fontSize: "11px",
-                  fontFamily: '"Fira Code", "Consolas", "Monaco", monospace',
-                  color: "#451a03",
-                  wordBreak: "break-all",
-                }}
-              >
-                {attachment}
-              </code>
-            </div>
-          ))}
+          {allAttachmentSections}
         </div>
       )}
     </div>
@@ -201,7 +271,7 @@ function MessageCard({ message, index, isExpanded, onToggleAttachments }: Messag
       }}
     >
       <MessageHeader message={message} index={index} />
-      <PayloadSection payload={message.payload} hasAttachments={message.attachments.length > 0} />
+      <PayloadSection payload={message.body.payload} />
       <AttachmentList attachments={message.attachments} isExpanded={isExpanded} onToggle={onToggleAttachments} />
     </li>
   );
